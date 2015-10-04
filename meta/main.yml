@@ -1,0 +1,16 @@
+---
+galaxy_info:
+  author: Greg Swift
+  description: Setup a FreeIPA Identity Management Server
+  license: GPLv2
+  min_ansible_version: 1.2
+  platforms:
+  - name: EL
+    versions:
+    - 7
+  - name: Fedora
+    versions:
+    - all
+  categories:
+  - system
+dependencies: []

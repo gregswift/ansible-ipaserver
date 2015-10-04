@@ -1,0 +1,18 @@
+ipaserver_base_command: ipa-server-install -U 
+ipaserver_configure_ssh: True
+ipaserver_configure_sshd: True
+ipaserver_dns_forwarder: 8.8.8.8
+ipaserver_domain: example.com
+ipaserver_hbac_allow: True
+ipaserver_idstart: 5000
+ipaserver_idmax: False
+ipaserver_mkhomedir: True
+ipaserver_packages:
+  - ipa-server
+  - bind
+  - bind-dyndb-ldap
+ipaserver_realm: EXAMPLE.COM
+ipaserver_setup_dns: True
+ipaserver_setup_ntp: True
+ipaserver_ssh_trust_dns: True
+ipaserver_ui_redirect: True

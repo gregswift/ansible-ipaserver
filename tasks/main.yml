@@ -1,0 +1,48 @@
+---
+- name: Hard set the hostname
+  hostname: name={{ ansible_fqdn }}
+
+- name: Add host entry
+  lineinfile:
+    dest=/etc/hosts
+    regexp=" {{ ansible_hostname }} "
+    line="{{ ansible_default_ipv4.address }} {{ ansible_fqdn }}"
+    owner=root
+    group=root
+    mode=0644
+
+- name: Ensure software is installed (yum)
+  yum: name={{ item }} state=present
+  with_items: ipaserver_packages
+  when: ansible_distribution == "CentOS" or
+        (ansible_distribution == "Fedora" and ansible_distribution_version|int <= 21)
+
+- name: Ensure software is installed (dnf)
+  dnf: name={{ item }} state=present
+  with_items: ipaserver_packages
+  when: ansible_distribution == "Fedora" and ansible_distribution_version|int > 21
+
+- name: Run the installer
+  action: command
+    {{ ipaserver_base_command }}
+    --realm {{ ipaserver_realm }}
+    --domain {{ ipaserver_domain }}
+    -a {{ ipaserver_admin_password }}
+    -p {{ ipaserver_dir_admin_password }}
+    --hostname={{ ansible_fqdn }}
+    --ip-address={{ ansible_eth0.ipv4.address }}
+    {{ '--idstart=%s' % ipaserver_idstart if ipaserver_idstart | default(False) else '' }}
+    {{ '--idmax=%s' % ipaserver_idmax if ipaserver_idmax | default(False) else '' }}
+    {{ '--forwarder=%s' % ipaserver_dns_forwarder
+       if ipaserver_dns_forwarder | default(False) else '--no-forwarders' }}
+    {{ '--mkhomedir' if ipaserver_mkhomedir | default(True) else '' }}
+    {{ '--setup-dns' if ipaserver_setup_dns | default(True) else '' }}
+    {{ '--ssh-trust-dns' if ipaserver_ssh_trust_dns | default(True) else '' }}
+    {{ '' if ipaserver_hbac_allow | default(True) else '--no_hbac_allow' }}
+    {{ '' if ipaserver_setup_ntp | default(True) else '--no-ntp' }}
+    {{ '' if ipaserver_configure_ssh | default(True) else '--no-ssh' }}
+    {{ '' if ipaserver_configure_sshd | default(True) else '--no-sshd' }}
+    {{ '' if ipaserver_ui_redirect | default(True) else '--no-ui-redirect' }}
+    creates=/etc/ipa/default.conf
+
+- include: firewalld.yml
