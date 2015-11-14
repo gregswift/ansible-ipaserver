@@ -1,6 +1,7 @@
 ---
 #firewalld doesn't exist on AWS CentOS 7 by default
 #
+
 - name: Make sure firewalld is installed
   yum: name=firewalld state=present
   
