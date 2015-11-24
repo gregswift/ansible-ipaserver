@@ -46,3 +46,4 @@
     creates=/etc/ipa/default.conf
 
 - include: firewalld.yml
+  when: ipaserver_manage_firewalld

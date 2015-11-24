@@ -16,3 +16,4 @@ ipaserver_setup_dns: True
 ipaserver_setup_ntp: True
 ipaserver_ssh_trust_dns: True
 ipaserver_ui_redirect: True
+ipaserver_manage_firewalld: True
