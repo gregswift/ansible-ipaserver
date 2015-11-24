@@ -1,9 +1,9 @@
 ---
 #firewalld doesn't exist on AWS CentOS 7 by default
-#
 - name: Make sure firewalld is installed
   yum: name=firewalld state=present
-  
+  when: ansible_os_family == "RedHat"
+
 #The firewalld ruleset configuration will fail
 #unless we start firewalld
 - name: Enable and start firewalld
