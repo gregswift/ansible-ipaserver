@@ -9,12 +9,12 @@
 - name: Enable and start firewalld
   service: name=firewalld state=started enabled=yes
   
-- name: Enable the LDAPS firewalld ruleset provided by freeipa 
+- name: Enable the LDAPS firewalld ruleset provided by freeipa
   firewalld: service=freeipa-ldaps permanent=true state=enabled
   notify: reload firewalld
   when: ansible_distribution == "Fedora"
 
-- name: Enable the individual rulesets for CentOS 
+- name: Enable the individual rulesets for CentOS
   firewalld: service={{ item }} permanent=true state=enabled
   with_items:
     - https
