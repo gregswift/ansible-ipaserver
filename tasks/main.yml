@@ -13,7 +13,7 @@
 
 - name: Ensure software is installed (yum)
   yum: name={{ item }} state=present
-  with_items: ipaserver_packages
+  with_items: '{{ipaserver_packages}}'
   when: ansible_distribution == "CentOS" or
         (ansible_distribution == "Fedora" and ansible_distribution_version|int <= 21)
 
@@ -30,7 +30,7 @@
     -a {{ ipaserver_admin_password }}
     -p {{ ipaserver_dir_admin_password }}
     --hostname={{ ansible_fqdn }}
-    --ip-address={{ ansible_eth0.ipv4.address }}
+    --ip-address={{ ansible_default_ipv4.address }}
     {{ '--idstart=%s' % ipaserver_idstart if ipaserver_idstart | default(False) else '' }}
     {{ '--idmax=%s' % ipaserver_idmax if ipaserver_idmax | default(False) else '' }}
     {{ '--forwarder=%s' % ipaserver_dns_forwarder
