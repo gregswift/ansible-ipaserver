@@ -9,6 +9,7 @@ ipaserver_idmax: False
 ipaserver_mkhomedir: True
 ipaserver_packages:
   - ipa-server
+  - ipa-server-dns
   - bind
   - bind-dyndb-ldap
 ipaserver_realm: EXAMPLE.COM

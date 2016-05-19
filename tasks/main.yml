@@ -5,8 +5,7 @@
 - name: Add host entry
   lineinfile:
     dest=/etc/hosts
-    regexp=" {{ ansible_hostname }} "
-    line="{{ ansible_default_ipv4.address }} {{ ansible_fqdn }}"
+    line="{{ ansible_default_ipv4.address }} {{ ansible_fqdn }} {{ansible_hostname}}"
     owner=root
     group=root
     mode=0644
@@ -22,9 +21,6 @@
   with_items: ipaserver_packages
   when: ansible_distribution == "Fedora" and ansible_distribution_version|int > 21
 
-- include: firewalld.yml
-  when: ipaserver_manage_firewalld
-
 - name: Run the installer
   action: "command
     {{ ipaserver_base_command }}
@@ -36,12 +32,16 @@
     --ip-address={{ ansible_default_ipv4.address }}
     {{ '--idstart=%s' % ipaserver_idstart if ipaserver_idstart | default(False) else '' }}
     {{ '--idmax=%s' % ipaserver_idmax if ipaserver_idmax | default(False) else '' }}
- #   {{ '--mkhomedir' if ipaserver_mkhomedir | default(True) else '' }}
-    {{ '--setup-dns' if ipaserver_setup_dns | default(True) else '' }}
-    {{ '--forwarder=%s' % ipaserver_dns_forwarder
-       if (ipaserver_setup_dns | default(True)) and (ipaserver_dns_forwarder | default(False)) else '--no-forwarders' }}
-    {{ '--no-forwarders'
-       if (ipaserver_setup_dns | default(True)) and (ipaserver_dns_forwarder is not defined) else '' }}
+    {% if ipaserver_setup_dns %}
+      '--setup-dns'
+      {% if ipaserver_dns_forwarder is defined %}
+        '--forwarder={{ipaserver_dns_forwarder}}'
+      {% else %}
+        '--no-forwarders'
+      {% endif %}
+    {% else %}
+      ''
+    {% endif %}
     {{ '--ssh-trust-dns' if ipaserver_ssh_trust_dns | default(True) else '' }}
     {{ '' if ipaserver_hbac_allow | default(True) else '--no_hbac_allow' }}
     {{ '' if ipaserver_setup_ntp | default(True) else '--no-ntp' }}
@@ -52,3 +52,7 @@
 
 - include: firewalld.yml
   when: ipaserver_manage_firewalld
+
+## Ability to create homedirs automatically may be added to this role, but the following
+## is a client command, not an ipa server command 
+#   {{ '--mkhomedir' if ipaserver_mkhomedir | default(True) else '' }}
