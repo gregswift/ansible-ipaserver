@@ -21,7 +21,11 @@
   with_items: "{{ ipaserver_packages }}"
   when: ansible_distribution == "Fedora" and ansible_distribution_version|int > 21
 
+## If we let this command log, the
+## passwords are printed in cleartext
+## if the task fails. 
 - name: Run the installer
+  no_log: True
   action: "command
     {{ ipaserver_base_command }}
     --realm {{ ipaserver_realm }}
