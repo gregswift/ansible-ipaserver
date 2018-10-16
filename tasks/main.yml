@@ -12,14 +12,12 @@
     mode=0644
 
 - name: Ensure software is installed (yum)
-  yum: name={{ item }} state=present
-  with_items: "{{ ipaserver_packages }}"
+  yum: name={{ ipaserver_packages }} state=present
   when: ansible_distribution == "CentOS" or
         (ansible_distribution == "Fedora" and ansible_distribution_version|int <= 21)
 
 - name: Ensure software is installed (dnf)
-  dnf: name={{ item }} state=present
-  with_items: "{{ ipaserver_packages }}"
+  dnf: name={{ ipaserver_packages }} state=present
   when: ansible_distribution == "Fedora" and ansible_distribution_version|int > 21
 
 - name: Run the installer
