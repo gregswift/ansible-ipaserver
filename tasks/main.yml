@@ -12,12 +12,12 @@
     mode=0644
 
 - name: Ensure software is installed (yum)
-  yum: name={{ ipaserver_packages }} state=present
+  yum: name="{{ ipaserver_packages }} + {{ ['ipa-server-dns'] if ipaserver_setup_dns else [] }}" state=present
   when: ansible_distribution == "CentOS" or
         (ansible_distribution == "Fedora" and ansible_distribution_version|int <= 21)
 
 - name: Ensure software is installed (dnf)
-  dnf: name={{ ipaserver_packages }} state=present
+  dnf: name="{{ ipaserver_packages }} + {{ ['ipa-server-dns'] if ipaserver_setup_dns else [] }}" state=present
   when: ansible_distribution == "Fedora" and ansible_distribution_version|int > 21
 
 - name: Run the installer
@@ -32,9 +32,14 @@
     {{ '--idstart=%s' % ipaserver_idstart if ipaserver_idstart | default(False) else '' }}
     {{ '--idmax=%s' % ipaserver_idmax if ipaserver_idmax | default(False) else '' }}
     {% if ipaserver_setup_dns %}
-      '--setup-dns'
-      {{ '--forwarder=%s' % ipaserver_dns_forwarder
-         if ipaserver_dns_forwarder | default(False) else '--no-forwarders' }}
+      --setup-dns
+      {% if ipaserver_dns_forwarder | default(False) %}
+        {% for forwarder in ipaserver_dns_forwarder %}
+          --forwarder={{ forwarder }}
+        {% endfor %}
+      {% else %}
+        --no-forwarders
+      {% endif %}
     {% endif %}
     {{ '--ssh-trust-dns' if ipaserver_ssh_trust_dns | default(True) else '' }}
     {{ '--mkhomedir' if ipaserver_mkhomedir | default(True) else '' }}
