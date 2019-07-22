@@ -1,7 +1,10 @@
 ipaserver_base_command: ipa-server-install -U 
+ipaserver_ip_address: "{{ ansible_default_ipv4.address }}"
 ipaserver_configure_ssh: True
 ipaserver_configure_sshd: True
-ipaserver_dns_forwarder: 8.8.8.8
+ipaserver_dns_forwarder:
+  - 8.8.8.8
+  - 8.8.4.4
 ipaserver_domain: example.com
 ipaserver_hbac_allow: True
 ipaserver_idstart: 5000

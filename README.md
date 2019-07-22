@@ -19,9 +19,12 @@ There are 2 main variables that need to be provided external to the role that ha
 The following variables are used by this role and values are defined in defaults/main.yml:
 
     ipaserver_base_command:     ipa-server-install -U
+    ipaserver_ip_address: "{{ ansible_default_ipv4.address }}"
     ipaserver_configure_ssh: True
     ipaserver_configure_sshd: True
-    ipaserver_dns_forwarder: 8.8.8.8
+    ipaserver_dns_forwarder:
+      - 8.8.8.8
+      - 8.8.4.4
     ipaserver_domain: example.com       # All lowercase. Actual DNS domain.
     ipaserver_hbac_allow: True
     ipaserver_idstart: 5000
@@ -36,6 +39,7 @@ The following variables are used by this role and values are defined in defaults
     ipaserver_setup_ntp: True
     ipaserver_ssh_trust_dns: True
     ipaserver_ui_redirect: True
+    ipaserver_manage_firewalld: True
 
 
 Example Playbook
